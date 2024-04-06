@@ -1,4 +1,7 @@
+import logging
 import math
+
+logging.basicConfig(level=logging.INFO, filename='5_log.log')
 
 print("Введите коэффициенты для уравнения")
 print("ax^2 + bx + c = 0:")
@@ -12,9 +15,9 @@ print("Дискриминант D = %.2f" % discr)
 if discr > 0:
     x1 = (-b + math.sqrt(discr)) / (2 * a)
     x2 = (-b - math.sqrt(discr)) / (2 * a)
-    print("x1 = %.2f \nx2 = %.2f" % (x1, x2))
+    logging.info(f'succeed, x1={x1}, x2={x2})')
 elif discr == 0:
     x = -b / (2 * a)
-    print("x = %.2f" % x)
+    logging.info(f'succeed, x1={x}')
 else:
-    print("Корней нет")
+    logging.error(f'The equation has no solution')
