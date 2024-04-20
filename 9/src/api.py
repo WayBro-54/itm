@@ -2,12 +2,20 @@ from typing import Annotated
 from fastapi import APIRouter, File, UploadFile, Depends, status, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.schemas import ImageModelDB, TextModelDB
+from src.schemas import ImageModelDB, TextModelDB, Test
 from src.crud import crud_document, crud_document_text
 from src.db import get_async_session
 from src.tasks import task_analyse_document
 
 router = APIRouter()
+
+
+@router.get('/test/{id}')
+async def test_chet(
+        id: Test = Depends(),
+        # id: Annotated[int, Path(pattern=r'[13579]$')]
+):
+    return id
 
 
 @router.post('/upload_doc')
@@ -33,6 +41,7 @@ async def analysis_text_to_img(
     exchange text to file in string,
     and save in model "DocumentText"
 
+    :param session:
     :param id_img: id documents to upload id path "/upload_doc"
 
     :return: "Done"
@@ -77,6 +86,7 @@ async def get_text_analysis(
         )
     return obj_db
 
+
 @router.delete(
     '/doc_delete/{id_img}',
     response_model=ImageModelDB,
@@ -95,5 +105,5 @@ async def doc_delete(
             status_code=status.HTTP_404_NOT_FOUND,
             detail='Could not find',
         )
-    res = await crud_document.remove(obj_db)
+    res = await crud_document.remove(obj_db, session)
     return res

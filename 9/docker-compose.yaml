@@ -7,6 +7,9 @@ services:
       context: .
     container_name: app
     command: uvicorn src.main:app --reload --host 0.0.0.0 --port 8000
+    volumes:
+      - ./src:/app/src
+      - ./documents:/app/documents/
     ports:
       - 8000:8000
     depends_on:
@@ -17,10 +20,12 @@ services:
     image: postgres:15
     container_name: db_app
     volumes:
-      - ./postgres:/var/lib/rabbitmq
+      - ./postgres:/var/lib/postgresql/data
     environment:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=postgres
+    ports:
+      - 5432:5432
 
   rabbitmq:
     image: rabbitmq:3.13-management
@@ -36,5 +41,16 @@ services:
       context: .
     container_name: celery
     command: celery -A src.tasks:celery worker --loglevel=info
+    volumes:
+      - ./documents:/app/documents/
     depends_on:
       - rabbitmq
+
+  migrate:
+    build:
+      context: .
+    container_name: migrate
+    command: alembic upgrade head
+    depends_on:
+      - db
+      - app
