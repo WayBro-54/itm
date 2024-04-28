@@ -24,7 +24,7 @@ class Category(models.Model):
     )
 
     def __str__(self):
-        return f'{self.name} {self.slug}'
+        return f'{self.slug} {self.name}'
 
     def __repr__(self):
         return f'{type(self).__name__}: {self.name} {self.slug}'
@@ -64,6 +64,12 @@ class Watch(models.Model):
         verbose_name = 'Watch'
         verbose_name_plural = 'Watches'
 
+    def __str__(self):
+        return f'{self.slug} {self.name}'
+
+    def __repr__(self):
+        return f'{type(self).__name__}: {self.name} - {self.slug}'
+
 
 class CategoryWatch(models.Model):
     watch = models.ForeignKey(
@@ -79,10 +85,31 @@ class CategoryWatch(models.Model):
         verbose_name = 'CategoryWatch'
         verbose_name_plural = 'CategoryWatch'
 
+    def __str__(self):
+        return f'{self.watch} - {self.category}'
+
+    def __repr__(self):
+        return f'{type(self).__name__}: {self.watch} - {self.category}'
+
 
 class ShoppingCart(models.Model):
-    user = models.ForeignKey(Users, on_delete=models.CASCADE)
+    user = models.ForeignKey(
+        Users,
+        on_delete=models.CASCADE,
+        related_name='user'
+    )
+    watch = models.ForeignKey(
+        Watch,
+        on_delete=models.CASCADE,
+        related_name='watch'
+    )
 
     class Meta:
         verbose_name = 'ShoppingCart'
         verbose_name_plural = 'ShoppingCarts'
+
+    def __str__(self):
+        return f'{self.watch} {self.user.email}'
+
+    # def __repr__(self):
+    #     return f'{type(self).__name__}: {self.watch__slug}'
